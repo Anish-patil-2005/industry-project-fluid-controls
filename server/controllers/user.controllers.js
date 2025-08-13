@@ -65,6 +65,8 @@ export const verifyOtp = async (req,res)=>{
      const { activationToken,  otp } = req.body;
  
      const verify = jwt.verify(activationToken, process.env.ACTIVATION_SECRET);
+
+     console.log(verify.data);
      
      if(!verify)
      {
@@ -73,7 +75,7 @@ export const verifyOtp = async (req,res)=>{
          })
      }
  
-     if(verify.otp !== otp)
+     if(String(verify.otp) !==String(otp))
      {
          return res.status(400).json({
              message:"otp is invalid"
@@ -214,21 +216,27 @@ export const updateProfilePic = async (req, res) => {
 };
 
 export const forgotPassword =async(req,res)=>{
-    const {email} =req.body;
-
-    const user = await User.findOne({email});
-
-    if(!user) return res.status(400).json({message: "No user with this email"});
-
-    const token = jwt.sign({email}, process.env.FORGOT_SECRET);
-
-    const data = {email,token};
-
-    await sendForgotMail("Fluid Controls- Reset Password ",data);
-
-    user.resetPasswordExpired = Date.now() + 5*60*1000;
-
-    await user.save();
-
-    res.json({message:"Reset password link is send to your mail"})
+    try {
+        const {email} =req.body;
+    
+        const user = await User.findOne({email});
+    
+        if(!user) return res.status(400).json({message: "No user with this email"});
+    
+        const token = jwt.sign({email}, process.env.FORGOT_SECRET);
+    
+        const data = {email,token};
+    
+        await sendForgotMail("Fluid Controls- Reset Password ",data);
+    
+        user.resetPasswordExpired = Date.now() + 5*60*1000;
+    
+        await user.save();
+    
+        res.json({message:"Reset password link is send to your mail"})
+    } catch (error) {
+        res.status(400).json({
+      message: error.message
+    });
+    }
 }
