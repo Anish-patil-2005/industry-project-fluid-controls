@@ -1,5 +1,6 @@
 import { Task } from "../models/task.models.js";
-import { User } from "../models/user.models.js";
+import { createNotification } from './notification.controllers.js';
+
 
 export const createTask = async (req, res) => {
   try {
@@ -63,11 +64,19 @@ export const assignTask = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    
+
     if (!task) {
       return res
         .status(404)
         .json({ success: false, message: "Task not found" });
     }
+
+    //Trigger notification
+    // when creating
+await createNotification(assignedTo, `Task "${task.title}" assigned to you`, task._id);
+
+
 
     res
       .status(200)
