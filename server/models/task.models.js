@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 
-const taskSchema = mongoose.Schema(
+const commentSchema = new mongoose.Schema(
+  {
+    text: { type: String, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  },
+  { timestamps: true }
+);
+
+const taskSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: String,
@@ -8,7 +16,7 @@ const taskSchema = mongoose.Schema(
     attachments: [String],
     priority: {
       type: String,
-      enum: ["Low", "Medium", "High"],
+      enum: ["Low", "Medium", "High", "Urgent"], // added Urgent if needed
       default: "Medium",
     },
     status: {
@@ -18,6 +26,7 @@ const taskSchema = mongoose.Schema(
     },
     assignedTo: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    comments: [commentSchema], // <-- embedded comments
   },
   { timestamps: true }
 );

@@ -8,6 +8,7 @@ import http from 'http';
 import userRoutes from './routes/user.routes.js';
 import taskRoutes from './routes/task.routes.js';
 import notificationRoutes from './routes/notification.routes.js'
+import documentRoutes from './routes/document.routes.js'
 import { initializeSocket } from './sockets/index.js';
 
 dotenv.config();
@@ -20,8 +21,9 @@ app.use('/public', express.static("uploads"));
 
 // Routes
 app.use('/api', userRoutes);
-app.use('/api', taskRoutes);
+app.use('/api/task', taskRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api',documentRoutes)
 
 // MongoDB connection
 connectDB();

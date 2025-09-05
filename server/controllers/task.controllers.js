@@ -74,10 +74,8 @@ export const assignTask = async (req, res) => {
 
     //Trigger notification
     // when creating
-await createNotification(assignedTo, `Task "${task.title}" assigned to you`, task._id);
-
-
-
+    await createNotification(assignedTo, `Task "${task.title}" assigned to you`, task._id);
+    
     res
       .status(200)
       .json({ success: true, message: "Task assigned successfully", task });
@@ -138,6 +136,8 @@ export const getTask = async (req, res) => {
 
     const tasks = await Task.find(filter)
       .populate("assignedTo", "name email")
+      .populate("createdBy", "name email")
+
       .sort({ createdAt: -1 });
 
     if (!tasks.length) {
@@ -171,42 +171,39 @@ export const deleteTask = async (req, res) => {
   }
 };
 
+// Update task status
 export const updateStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, comment } = req.body; // accept optional comment
     const task = await Task.findById(req.params.id);
 
     if (!task) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Task not found" });
+      return res.status(404).json({ success: false, message: "Task not found" });
     }
 
     // Ensure operator is assigned
     const assignedCheck = Array.isArray(task.assignedTo)
-      ? task.assignedTo.map((id) => id.toString()).includes(req.user.id)
+      ? task.assignedTo.map(id => id.toString()).includes(req.user.id)
       : task.assignedTo.toString() === req.user.id;
 
     if (!assignedCheck) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not authorized" });
+      return res.status(403).json({ success: false, message: "Not authorized" });
     }
 
     task.status = status;
+    if (comment) {
+      task.comments.push({ text: comment, user: req.user.id });
+    }
+
     await task.save();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Task status updated", task });
+    res.status(200).json({ success: true, message: "Task status updated", task });
   } catch (error) {
     console.error("Error updating status:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Error updating status of task",
-        error: error.message,
-      });
+    res.status(500).json({ success: false, message: "Error updating task status", error: error.message });
   }
 };
+
+
+
+

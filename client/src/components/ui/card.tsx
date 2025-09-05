@@ -1,6 +1,10 @@
 import * as React from "react"
+import { cn } from "./utils" // Assumes your utils.ts file is in the same folder
 
-import { cn } from "@/lib/utils"
+// --- THIS IS THE FIX ---
+// Each component is now wrapped in React.forwardRef. This allows them to correctly
+// pass down props and refs from parent components, which is essential for libraries
+// like Radix UI (which powers the Dialog and Dropdown components).
 
 const Card = React.forwardRef<
   HTMLDivElement,

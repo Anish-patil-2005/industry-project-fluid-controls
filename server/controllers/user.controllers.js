@@ -1,4 +1,5 @@
 import {User} from '../models/user.models.js'
+import { Task } from '../models/task.models.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import {sendForgotMail, sendMail} from '../middlewares/sendMail.middlewares.js'
@@ -240,3 +241,37 @@ export const forgotPassword =async(req,res)=>{
     });
     }
 }
+
+
+export const getAllOperators = async (req, res) => {
+  try {
+    const operators = await User.find({ role: /^operator$/i });
+
+    const operatorsWithAvailability = await Promise.all(
+      operators.map(async (op) => {
+        const totalTasks = await Task.countDocuments({ 
+          user_id: op._id,
+          status: { $ne: "Completed" }  // count only active tasks
+        });
+        return {
+          _id: op._id,
+          name: op.name,
+          email: op.email,
+          totalTasks,
+          availability: totalTasks >= 3 ? "Busy" : "Available",
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      operators: operatorsWithAvailability,
+    });
+  } catch (error) {
+    console.error("--- [getAllOperators] An error occurred:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error while fetching operators."
+    });
+  }
+};
