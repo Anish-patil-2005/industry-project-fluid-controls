@@ -65,9 +65,19 @@ export function RegisterForm() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl font-bold">TM</span>
-          </div>
+          <div
+    className="w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-3 overflow-hidden"
+    style={{
+      backgroundColor: 'rgb(33,79,142)',
+      boxShadow: '0 4px 6px rgba(33,79,142,0.5)'
+    }}
+  >
+    <img
+      src="/fc-logo.jpg"   // path to your logo in public folder
+      alt="Fluid Controls Logo"
+      className="w-12 h-12 object-contain"
+    />
+  </div>
           <h1 className="text-3xl font-bold text-slate-900">Task Manager</h1>
           <p className="text-slate-600 mt-2">Create your account</p>
         </div>
