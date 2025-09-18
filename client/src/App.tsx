@@ -147,32 +147,40 @@ function MainLayout({ user, onLogout }: { user: User, onLogout: () => void }) {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">TM</span>
-              </div>
-              <h1 className="text-xl font-semibold text-slate-900">Task Manager</h1>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              {/* --- NEW: Add the NotificationBell to the header --- */}
-              <NotificationBell />
-              <div className="text-right">
-                <p className="text-sm font-medium text-slate-900">{user.name}</p>
-                <p className="text-xs text-slate-500 capitalize">{user.role}</p>
-              </div>
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 text-sm font-medium">{user.name.split(' ').map(n => n[0]).join('')}</span>
-              </div>
-              <Button variant="outline" size="sm" onClick={onLogout} className="text-slate-600 hover:text-slate-900">
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex justify-between items-center h-16">
+      
+      {/* Left Section: Logo + Title */}
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12  rounded-lg flex items-center justify-center overflow-hidden">
+          <img 
+            src="/fc-logo.jpg"  // use public folder path
+            alt="Fluid Controls Logo" 
+            className="w-10 h-10 object-contain"
+          />
+        </div>
+        <h1 className="text-xl font-semibold text-slate-900">Effective Information Flow System</h1>
+      </div>
+
+      {/* Right Section: User Info */}
+      <div className="flex items-center space-x-4">
+        <NotificationBell />
+        <div className="text-right">
+          <p className="text-sm font-medium text-slate-900">{user.name}</p>
+          <p className="text-xs text-slate-500 capitalize">{user.role}</p>
+        </div>
+        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+          <span className="text-blue-600 text-sm font-medium">{user.name.split(' ').map(n => n[0]).join('')}</span>
+        </div>
+        <Button variant="outline" size="sm" onClick={onLogout} className="text-slate-600 hover:text-slate-900">
+          <LogOut className="w-4 h-4" />
+        </Button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {renderDashboard()}
       </main>

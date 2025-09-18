@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import TaskForm from "./CreateTaskDialog";
-import DocumentTab from "./DocumentsTab.js";
+import DocumentTab from "./DocumentsTab";
 
 import { 
   getTasksAPI,
@@ -216,7 +216,7 @@ export default function SupervisorDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
       {/* Top Bar */}
-      <header className="bg-white shadow-sm">
+      {/* <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-md bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center text-white font-bold">FC</div>
@@ -233,7 +233,7 @@ export default function SupervisorDashboard() {
             <button className="px-3 py-2 rounded-md bg-blue-600 text-white">Logout</button>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <main className="max-w-7xl mx-auto px-4 py-6">
         {/* Stat cards */}
@@ -398,3 +398,5 @@ function StatCard({ title, value, icon }) {
 function Tab({ label, active, onClick }) {
   return <button onClick={onClick} className={`px-4 py-2 ${active?"bg-white shadow rounded":"text-gray-500"}`}>{label}</button>;
 }
+
+

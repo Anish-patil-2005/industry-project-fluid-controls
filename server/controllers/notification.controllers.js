@@ -25,20 +25,13 @@ export const createNotification = async (userId, message, taskId = null) => {
 export const getNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({
-      userId: new mongoose.Types.ObjectId(req.user.id) // ✅ FIXED
-    })
-      .sort({ timestamp: -1 })
-      .lean();
+      userId: new mongoose.Types.ObjectId(req.user.id)
+    }).sort({ timestamp: -1 }).lean();
 
-    console.log(
-      "📩 Fetched notifications for user:",
-      req.user.id,
-      notifications
-    );
-
+    console.log("Fetched notifications:", notifications);
     res.status(200).json(notifications);
   } catch (err) {
-    console.error("❌ Error fetching notifications:", err);
+    console.error("Error fetching notifications:", err);
     res.status(500).json({ error: "Failed to fetch notifications" });
   }
 };

@@ -18,41 +18,45 @@ export default function NotificationBell() {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Fetch notifications on mount
   useEffect(() => {
-    if (isOpen) {
-      const fetchNotifications = async () => {
-        setIsLoading(true);
-        try {
-          const response = await apiClient.get('/notifications');
-          setNotifications(response.data || []);
-        } catch (error) {
-          console.error("Failed to fetch notifications:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      fetchNotifications();
-    }
-  }, [isOpen]);
+    const fetchNotifications = async () => {
+      setIsLoading(true);
+      try {
+        const response = await apiClient.get('/notifications');
+        console.log("Notifications fetched:", response.data);
+        setNotifications(response.data || []);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   const handleMarkAllRead = async () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })));
-    // Optionally call backend endpoint here: await apiClient.put('/notifications/mark-all-read');
+    if (unreadCount === 0) return;
+    try {
+      await apiClient.put('/notifications/mark-all-read');
+      setNotifications(notifications.map(n => ({ ...n, read: true })));
+    } catch (error) {
+      console.error(error);
+      alert("Failed to mark all notifications as read.");
+    }
   };
 
   const handleClearAll = async () => {
-    if (window.confirm("Are you sure you want to clear all notifications?")) {
-      try {
-        // --- THIS IS THE FIX ---
-        // This line now sends a DELETE request to your backend endpoint.
-        await apiClient.delete('/notifications');
-        // Instantly update the UI to show an empty list
-        setNotifications([]);
-      } catch (error) {
-        console.error("Failed to clear notifications:", error);
-        alert("Could not clear notifications. Please try again.");
-      }
-    } 
+    if (notifications.length === 0) return;
+    if (!window.confirm("Are you sure you want to clear all notifications?")) return;
+
+    try {
+      await apiClient.delete('/notifications');
+      setNotifications([]);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to clear notifications.");
+    }
   };
 
   return (
@@ -67,6 +71,7 @@ export default function NotificationBell() {
           )}
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-80 p-0">
         <div className="flex items-center justify-between p-3 border-b">
           <h4 className="font-medium text-sm">Notifications</h4>
@@ -89,21 +94,26 @@ export default function NotificationBell() {
             </Button>
           </div>
         </div>
+
         <div className="max-h-80 overflow-y-auto">
           {isLoading ? (
             <p className="p-4 text-sm text-center text-slate-500">Loading...</p>
           ) : notifications.length === 0 ? (
-            <p className="p-4 text-sm text-center text-slate-500">You have no new notifications.</p>
+            <p className="p-4 text-sm text-center text-slate-500">
+              You have no new notifications.
+            </p>
           ) : (
             <div className="divide-y">
-              {notifications.map(notification => (
+              {notifications.map(n => (
                 <div
-                  key={notification._id}
-                  className={`p-3 ${!notification.read ? 'bg-blue-50' : 'bg-white'}`}
+                  key={n._id}
+                  className={`p-3 cursor-pointer ${
+                    !n.read ? 'bg-blue-50 border-l-2 border-blue-500' : 'bg-white'
+                  }`}
                 >
-                  <p className="text-sm">{notification.message}</p>
+                  <p className="text-sm">{n.message}</p>
                   <p className="text-xs text-slate-500 mt-1">
-                    {new Date(notification.timestamp).toLocaleString()}
+                    {new Date(n.timestamp).toLocaleString()}
                   </p>
                 </div>
               ))}
